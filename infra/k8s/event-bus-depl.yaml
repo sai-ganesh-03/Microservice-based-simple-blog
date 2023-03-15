@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: event-bus-depl
+spec: 
+  replicas: 1
+  selector: 
+    matchLabels:
+      app: event-bus
+  template:     #template contains the pod config
+    metadata: 
+      labels: 
+        app: event-bus
+    spec:
+      containers:
+        - name: event-bus
+          image: saiganesh03/event-bus
+---
+# Config for Cluster IP service
+apiVersion: v1
+kind: Service
+metadata: 
+  name: event-bus-srv
+spec:
+  type: ClusterIP #Even if we didn't specify the type, ClusterIP service will be created as default
+  selector: # Selector selects the pods that this service need to cater
+    app: event-bus #Check above code, there the label is given to the pods
+  ports: 
+    - name: event-bus
+      protocol: TCP
+      port: 4005 #This is the port of the ClusterIP service.
+      targetPort: 4005 #This the port, the event-bus service is listing to.
